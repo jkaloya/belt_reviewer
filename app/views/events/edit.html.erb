@@ -1,0 +1,41 @@
+<html>
+    <head>
+       <title>Login</title>
+    </head>
+    <body>
+        <div id='wrapper'>
+            <div class='box'>
+                <a href="/events">Events Dashboard</a>
+                <form action='/events/<%= @event.id %>' method='POST'>
+                    <input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+                    <input type="hidden" name="_method" value="patch">
+                    <p>Name: <input type='text' value="<%= @event.name %>" name='event[name]'></p>
+                    <p>Date: <input type='text' value="<%= @event.date %>" name='event[date]'></p>
+                    <p>Location: <input type='text' value="<%= @event.location %>" name='event[location]'>
+                    <select name='event[state]'>
+                        <% @states.each do |state| %>
+                            <% if state == @event.state%>
+                                <option value="<%= state %>" selected><%= state %></option>
+                            <% else %>
+                                <option value="<%= state %>"><%= state %></option>
+                            <% end %>
+                        <% end %>
+                    </select></p>
+                    <input type='submit' value='Update'>
+                </form>
+                <form action='/events/<%= @event.id %>' method='post'>
+                <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+                <input type='hidden' name='_method' value='delete'>
+                <input type='submit' value='Delete'>
+                </form>
+            </div>
+            <% if flash[:errors] %>
+                <% flash[:errors].each do |i| %>
+                    <ul style="list-style: none;">
+                        <li><%= i %></li>
+                    </ul>
+                <% end %>
+            <% end %>
+        </div>
+    </body>
+</html>

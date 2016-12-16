@@ -1,0 +1,41 @@
+<html>
+    <head>
+       <title>Events Show</title>
+    </head>
+    <body>
+        <h3><%= @event.name %></h3>
+        <p>Host: <%= @event.user.first_name%> <%= @event.user.last_name%><p>
+        <p>Date: <%= @event.date.strftime '%b %-d, %Y' %>
+        <p>Location: <%= @event.location%>
+        <p>People who are joing the event: <%= @attendants.count %></p>
+        <table>
+           <thead>
+               <tr>
+                   <th>Name</th>
+                   <th>Location</th>
+                   <th>State</th>
+               </tr>
+           </thead>
+           <tbody>
+               <tr>
+                   <% @attendants.each do |a| %>
+                   <td><%= a.first_name %> <%= a.last_name %></td>
+                   <td><%= a.location %></td>
+                   <td><%= a.state %></td>
+                   <% end %>
+               </tr>
+           </tbody>
+        </table>
+        <h3>Discussion about this event:</h3>
+        <% @comments.each do |c| %>
+        <ul style="list-style: none;">
+            <li><%= c.user.first_name %> says: <%= c.content %></li>
+        </ul>
+        <% end %>
+        <form action='/events/<%= @event.id %>/create' method='post'>
+            <input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+            <p>Comment: <input type="text" name="comment[content]"></p>
+            <input type='submit' name='create' value='Submit Comments'/>
+        </form>
+    </body>
+</html>

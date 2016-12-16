@@ -1,0 +1,42 @@
+<html>
+    <head>
+       <title>Login</title>
+    </head>
+    <body>
+        <div id='wrapper'>
+            <div class='box'>
+                <a href="/events">Events Dashboard</a>
+                <form action='/users/<%= @user.id %>' method='POST'>
+                    <input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+                    <input type="hidden" name="_method" value="patch">
+                    <p>First Name: <input type='text' value="<%= @user.first_name %>" name='user[first_name]'></p>
+                    <p>Last Name: <input type='text' value="<%= @user.last_name %>" name='user[last_name]'></p>
+                    <p>Email: <input type='text' value="<%= @user.email %>" name='user[email]'></p>
+                    <p>Location: <input type='text' value="<%= @user.location %>" name='user[location]'>
+                    <select name='user[state]'>
+                        <% @states.each do |state| %>
+                            <% if state == @user.state%>
+                                <option value="<%= state %>" selected><%= state %></option>
+                            <% else %>
+                                <option value="<%= state %>"><%= state %></option>
+                            <% end %>
+                        <% end %>
+                    </select></p>
+                    <input type='submit' value='Update'>
+                </form>
+                <form action='/users/<%= @user.id %>' method='post'>
+                    <input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+                    <input type="hidden" name="_method" value="delete">
+                    <input type='submit' value='Delete Account'>
+                </form>
+            </div>
+            <% if flash[:errors] %>
+                <% flash[:errors].each do |i| %>
+                    <ul style="list-style: none;">
+                        <li><%= i %></li>
+                    </ul>
+                <% end %>
+            <% end %>
+        </div>
+    </body>
+</html>

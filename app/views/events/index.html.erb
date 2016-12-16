@@ -1,0 +1,146 @@
+<html>
+    <head>
+       <title>Events</title>
+    </head>
+    <body>
+        <a href="/users/<%= @user.id %>">Edit My Profile</a>
+        <h3>Welcome, <%= @user.first_name %></h3>
+        <br>
+        <h5>Here are some of the events at your state:</h5>
+        <div id="my_state_table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Location</th>
+                        <th>Host</th>
+                        <th>Action/Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @event_in_state.each do |i| %>
+                        <tr>
+                            <td><a href="events/<%= i.id %>"><%= i.name %><a></td>
+                            <td><%= i.date.strftime '%b %-d, %Y' %></td>
+                            <td><%= i.location %></td>
+                            <td><%= i.user.first_name %></td>
+                            <% if current_user == i.user %>
+                                <td>
+                                    <form action='/events/<%= i.id %>/edit'>
+                                    <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+                                    <input type='submit' value='Edit'>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action='/events/<%= i.id %>' method='post'>
+                                    <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+                                    <input type='hidden' name='_method' value='delete'>
+                                    <input type='submit' value='Delete'>
+                                    </form>
+                                </td>
+                            <% elsif Attending.where(event_id: i.id, user_id: current_user.id).empty? %>
+                                <td>
+                                    <form action='/attendants' method='post'>
+                                        <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+                                        <input type='hidden' name='i_id' value='<%= i.id %>'>
+                                        <input type='submit' value='Join'>
+                                    </form>
+                                </td>
+                            <% else %>
+                                <td>Joining</td>
+                                <td>
+                                    <form action='/attendants' method='post'>
+                                    <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+                                    <input type='hidden' name='i_id' value='<%= i.id %>'>
+                                    <input type='hidden' name='_method' value='delete'>
+                                    <input type='submit' value='Cancel'>
+                                    </form>
+                                </td>
+                            <% end %>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+        </div>
+        <div id="other_states_table">
+            <h5>Here are some of the events on other states:</h5>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Location</th>
+                        <th>Host</th>
+                        <th>Action/Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @event_not_in_state.each do |i| %>
+                        <tr>
+                            <td><a href="events/<%= i.id %>"><%= i.name %><a></td>
+                            <td><%= i.date.strftime '%b %-d, %Y' %></td>
+                            <td><%= i.location %></td>
+                            <td><%= i.user.first_name %></td>
+                        <% if current_user == i.user %>
+                            <td>
+                                <form action='/events/<%= i.id %>/edit'>
+                                <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+                                <input type='submit' value='Edit'>
+                                </form>
+                            </td>
+                            <td>
+                                <form action='/events/<%= i.id %>' method='post'>
+                                <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+                                <input type='hidden' name='_method' value='delete'>
+                                <input type='submit' value='Delete'>
+                                </form>
+                            </td>
+                        <% elsif Attending.where(event_id: i.id, user_id: current_user.id).empty? %>
+                            <td>
+                                <form action='/attendants' method='post'>
+                                    <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+                                    <input type='hidden' name='i_id' value='<%= i.id %>'>
+                                    <input type='submit' value='Join'>
+                                </form>
+                            </td>
+                        <% else %>
+                            <td>Joining</td>
+                            <td>
+                                <form action='/attendants' method='post'>
+                                <input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>
+                                <input type='hidden' name='i_id' value='<%= i.id %>'>
+                                <input type='hidden' name='_method' value='delete'>
+                                <input type='submit' value='Cancel'>
+                                </form>
+                            </td>
+                        <% end %>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+        </div>
+        <div id="add_event">
+            <h4>Add Event</h4>
+            <form action='/events' method='post'>
+                <input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+                <p>Name: <input type='text' name='event[name]'></p>
+                <p>Date: <input type='date' name='event[date]'></p>
+                <p>Location: <input type='text' name='event[location]'>
+                <select name='event[state]'>
+                    <% @states.each do |s| %>
+                        <option value="<%= s %>"><%= s %></option>
+                    <% end %>
+                </select></p>
+                <input type='submit' value='Add Event'>
+            </form>
+            <% if flash[:errors] %>
+                <% flash[:errors].each do |i| %>
+                    <ul style="list-style: none;">
+                        <li><%= i %></li>
+                    </ul>
+                <% end %>
+            <% end %>
+        </div>
+    </body>
+</html>
